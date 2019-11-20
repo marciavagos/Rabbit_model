@@ -29,7 +29,8 @@ void RAMM::init(Constants *idata, Settings *isettings)
 
 	Vm = -73.496; 
 	//Na_i = 9.1366; Na_junc = 9.1361; Na_sl = 9.1364; 
-	Na_i = 6.86; Na_junc = 6.86; Na_sl = 6.86;
+	Na_i = 11.3; Na_junc = 11.3; Na_sl = 11.3;
+	//Na_i = 6.86; Na_junc = 6.86; Na_sl = 6.86;
 	K_i = 120;
 	Ca_i = 2.0738e-04; Ca_sl = 2.2918e-4;
 	//Ca_i = 7.3e-05; Ca_sl = 7.3e-5;
@@ -2033,7 +2034,7 @@ int RAMM::lengthMinimumStateVector()
 void RAMM::loadX0Data(double* x0data, int x0length)
 {
 	int startat = -1;
-	int numVarsPerMembr = 29;
+	int numVarsPerMembr = 25;
 	int numVarsPerSegment = 2 + 2 * numVarsPerMembr + 23 * settings->N_CaDomains;
 	
 	Vm = x0data[startat+1];
@@ -2064,30 +2065,30 @@ void RAMM::loadX0Data(double* x0data, int x0length)
 			segments[ii].membrane[jj].m_Na = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+2];
 			segments[ii].membrane[jj].h1_Na = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+3];
 			segments[ii].membrane[jj].h2_Na = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+4];
-			segments[ii].membrane[jj].to_r = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+8]; 
-			segments[ii].membrane[jj].to_s1 = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+9]; 
-			segments[ii].membrane[jj].to_s2 = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+9];
-			segments[ii].membrane[jj].to_s3 = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+9];
-			segments[ii].membrane[jj].pa_Kr = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+10]; 
-			segments[ii].membrane[jj].pi_Kr = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+11];
-			segments[ii].membrane[jj].z_Ks = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+12];
-			segments[ii].membrane[jj].d_L = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+14];
-			segments[ii].membrane[jj].f_L = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+15];
-			segments[ii].membrane[jj].d_T = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+16]; 
-			segments[ii].membrane[jj].f_T = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+17];
+			segments[ii].membrane[jj].to_r = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+5]; 
+			segments[ii].membrane[jj].to_s1 = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+6]; 
+			segments[ii].membrane[jj].to_s2 = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+7];
+			segments[ii].membrane[jj].to_s3 = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+8];
+			segments[ii].membrane[jj].pa_Kr = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+9]; 
+			segments[ii].membrane[jj].pi_Kr = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+10];
+			segments[ii].membrane[jj].z_Ks = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+11];
+			segments[ii].membrane[jj].d_L = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+12];
+			segments[ii].membrane[jj].f_L = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+13];
+			segments[ii].membrane[jj].d_T = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+14]; 
+			segments[ii].membrane[jj].f_T = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+15];
 
-			segments[ii].membrane[jj].Buff_Na_junc = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+20];
-			segments[ii].membrane[jj].Buff_Na_sl = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+21];
-			segments[ii].membrane[jj].Buff_Ca_SLLj = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+22];
-			segments[ii].membrane[jj].Buff_Ca_SLLsl = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+23];
-			segments[ii].membrane[jj].Buff_Ca_SLHj = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+24];
-			segments[ii].membrane[jj].Buff_Ca_SLHsl = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+25];
-			segments[ii].membrane[jj].Buff_Ca_EGTA_sl = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+26];
+			segments[ii].membrane[jj].Buff_Na_junc = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+16];
+			segments[ii].membrane[jj].Buff_Na_sl = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+17];
+			segments[ii].membrane[jj].Buff_Ca_SLLj = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+18];
+			segments[ii].membrane[jj].Buff_Ca_SLLsl = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+19];
+			segments[ii].membrane[jj].Buff_Ca_SLHj = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+20];
+			segments[ii].membrane[jj].Buff_Ca_SLHsl = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+21];
+			segments[ii].membrane[jj].Buff_Ca_EGTA_sl = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+22];
 			
-			segments[ii].membrane[jj].Ca_junc = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+27];
-			segments[ii].membrane[jj].Ca_sl = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+28];
-			segments[ii].membrane[jj].Na_junc = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+29];
-			segments[ii].membrane[jj].Na_sl = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+30];
+			segments[ii].membrane[jj].Ca_junc = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+23];
+			segments[ii].membrane[jj].Ca_sl = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+24];
+			segments[ii].membrane[jj].Na_junc = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+25];
+			segments[ii].membrane[jj].Na_sl = x0data[ii*numVarsPerSegment+jj*numVarsPerMembr+startat+26];
 			
 			//for(int abcd=0; abcd<8; abcd++)
 			//{
