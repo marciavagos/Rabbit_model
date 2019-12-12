@@ -1,0 +1,95 @@
+APDRepLevel = 0.9
+stimdur = 2
+Istim=0 // -20
+bcl=500 //500
+
+startsave=115000 // 115000.00
+ft=120000 // 120000.0
+//ft = 10000
+//startsave = 5000
+//startsave  = 0
+//ft = 1200000
+X0_File=states.txt
+Update_X0 = true
+Load_X0 = false
+Output_APD = true
+levelOfElectroDetail = 43
+Adaptive_dt_Alpha = 0.995000
+DT_MAX = 0.010000
+skip = 1.00000
+cellType = 2
+applyVoltageClamp = false
+
+Ito_model = 2 // Aslanidi
+
+Nai_initial=6.86
+
+//Flec = 0.000000
+IK1B = 0.000000
+IKrB = 0.000000
+IKsB = 0.000000
+IsusB = 1.000000
+ITo1B = 0.000000
+ICaLB = 0.000000
+ICaTB = 0.000000
+INaB = 0.000000
+INabB = 0.000000
+INaKB = 0.000000
+INaCaB = 0.000000
+ICabB = 0.000000
+IClbB = 0.000000
+ICaPB = 0.000000
+IpCaB = 0.000000
+IupB = 0.000000
+IClCaB = 1.0
+ISKB = 1.0
+IKAchB = 1.0
+
+INa_junc_scl=3.372391230822680441e+00
+INa_sl_scl=3.372391230822680441e+00
+INaK_junc_scl=1.377958514342213725e+00
+INaK_sl_scl=1.377958514342213725e+00
+ICaL_junc_scl=1.077899841182815344e+00
+ICaL_sl_scl=1.077899841182815344e+00
+ICaT_junc_scl=2.737617377518703154e+00
+ICaT_sl_scl=2.737617377518703154e+00
+INaCa_junc_scl=3.534855457580968530e+00
+INaCa_sl_scl=3.534855457580968530e+00
+IK1_scl=1.873991368457622375e+00
+IKr_scl=2.081463194396971250e+00
+IKs_scl=2.573680994509831343e+00
+Isus_scl=0.0
+ITo_scl=2.870883005477907535e+00
+ICab_junc_scl=3.524854086596124869e+00
+ICab_sl_scl=3.524854086596124869e+00
+ICaP_junc_scl=1.781741940030970417e+00
+ICaP_sl_scl=1.781741940030970417e+00
+INab_junc_scl=3.432618027829259955e+00
+INab_sl_scl=3.432618027829259955e+00
+IClb_scl=1.354812191164660007e+00
+
+kNaK_Na_n = 1.5
+Ca_o = 2.0
+Na_o = 135
+Fluo3 = 0.000000
+//Clamp_Na_i = 8.400000
+//Clamp_Ca_i = 0.3e-03
+
+hideOutput = false
+N_Segments = 1
+N_CaDomains = 18
+segOutputRes = 10
+domOutputRes = 1
+RyRModelType = 2
+NUMS2S = 0
+BCL_S2 = 5500
+Output_Binary_Data = false                           
+//isAF = 0
+//isRA = 0
+
+//factDiffJuncSl = 0.01
+//factDiffSlMyo = 2
+//factBmaxCSQN = 1
+
+//VjuncFact = 0.001
+	
