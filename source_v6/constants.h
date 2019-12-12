@@ -28,7 +28,7 @@ class Constants
 		double IbarNCX, KmCai, KmCao, KmNai, KmNao, KmNao_p3, ksat, Kdact, nu;
 		double GCaL, GCaT;
 		double ICaP_max, k_CaP;
-		double kNaCa, dNaCa, gamma;
+		double kNaCa, dNaCa, n_NaCa, gamma;
 		double Q10NCX, IbarSLCaP, KmPCa, KmPCaPow1_6, GCab, Q10SLCaP, Q10SRCaP;
 		double Kmf_NP, Kmf_P, Kmr, hillSRCaP, Vmax_SRCaP;
 		
@@ -156,6 +156,7 @@ class Constants
 			gamma = 0.45;
 			dNaCa = 3e-4;
 			kNaCa = 1.41E-4;
+			n_NaCa = 3;
 			ICaP_max = 190.0E-3; 
 			k_CaP = 2e-4;
 			Q10NCX = 1.57;

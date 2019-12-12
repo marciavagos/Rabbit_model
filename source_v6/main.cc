@@ -129,6 +129,7 @@ void parseKeyValuePair(string key, string value)
         if(GenPurpose::sCompI(key,"IClCaB")) settings->IClCaB = atof(value.c_str());
 	if(GenPurpose::sCompI(key,"IsusB")) settings->IsusB = atof(value.c_str());
 	if(GenPurpose::sCompI(key,"IKAchB")) settings->IKAchB = atof(value.c_str());
+	if(GenPurpose::sCompI(key,"IbarNCX")) dataEpi->IbarNCX = atof(value.c_str());
 	if(GenPurpose::sCompI(key,"INa_junc_scl")) settings->INa_junc_scl = atof(value.c_str());
 	if(GenPurpose::sCompI(key,"INa_sl_scl")) settings->INa_sl_scl = atof(value.c_str());
 	if(GenPurpose::sCompI(key,"ITo_scl")) settings->ITo_scl = atof(value.c_str());
@@ -156,6 +157,7 @@ void parseKeyValuePair(string key, string value)
         if(GenPurpose::sCompI(key,"IClCa_scl")) settings->IClCa_scl = atof(value.c_str());
 	if(GenPurpose::sCompI(key,"APDRepLevel")) settings->APDRepLevel = atof(value.c_str());
 	if(GenPurpose::sCompI(key,"Ito_model")) settings->Ito_model = atof(value.c_str());
+        if(GenPurpose::sCompI(key,"NCX_model")) settings->NCX_model = atof(value.c_str());
 	if(GenPurpose::sCompI(key,"Ca_Buff_Factor")) settings->Ca_Buff_Factor = atof(value.c_str());
 
 	if(GenPurpose::sCompI(key,"simIKAch") || GenPurpose::sCompI(key,"sim_IKAch")) settings->simIKAch = GenPurpose::parseBoolVal(value);
@@ -194,6 +196,7 @@ void parseKeyValuePair(string key, string value)
 	if(GenPurpose::sCompI(key,"LowConductionEnd")) settings->strandLowConductionEnd = (int)atof(value.c_str());
 	if(GenPurpose::sCompI(key,"LowConductionFactor")) settings->strandLowConductionFactor = atof(value.c_str());
 	if(GenPurpose::sCompI(key,"GapJunction")) settings->Rgap = atof(value.c_str());
+	if(GenPurpose::sCompI(key,"PacingLocation")) settings->PacingLocation = atof(value.c_str());
 	if(GenPurpose::sCompI(key,"StrandLength")) 
 	{
 		settings->strandLength = (int)atof(value.c_str());
@@ -209,8 +212,10 @@ void parseKeyValuePair(string key, string value)
 			settings->stimlocation[ab] = false;
 			settings->stimlocationAddStim[ab] = false;
 		}
-		settings->stimlocation[0] = true;
-		settings->stimlocationAddStim[0] = true;
+		//settings->stimlocation[0] = true;
+		//settings->stimlocationAddStim[0] = true;
+                settings->stimlocation[settings->PacingLocation] = true;
+                settings->stimlocationAddStim[settings->PacingLocation] = true;
 	}
 	if(GenPurpose::sCompI(key,"RyRPo_Times") || GenPurpose::sCompI(key,"RyRPoTimes"))
 	{
@@ -601,7 +606,9 @@ int singlecellsims(int argc, char *argv[])
 		if(nrOfNCXClampTimes > 0) cout << "==   NCX Clamp Times       = " << s_NCX_clamp_times << endl;
 		if(nrOfNCXClampTimes > 0) cout << "==   NCX Clamp Levels      = " << s_NCX_clamp_levels << endl;
 		if(settings->Ito_model == 2){cout << "==   Ito_model: 	Aslanidi " << endl;}
-		else{ cout << "==   Ito_model:  Lindblad " << endl;};
+		if(settings->Ito_model == 1){ cout << "==   Ito_model:  Lindblad " << endl;}
+		if(settings->NCX_model == 1){cout << "==   NCX_model:   Lindblad " << endl;}
+		else{ cout << "==   NCX_model:  Voigt&Heijman " << endl;};
 		cout << "==================================================" << endl;
 		cout << "== Current block: " << endl;
 		if(settings->Flec != 0) 	cout << "==   Flec   :  " << settings->Flec << endl;
@@ -632,6 +639,7 @@ int singlecellsims(int argc, char *argv[])
 
 		cout << "==================================================" << endl;
                 cout << "== Current scalings: " << endl;
+		if(dataEpi->IbarNCX != 0) cout            << "==   IbarNCX        :  " << dataEpi->IbarNCX << endl;
 		if(settings->INa_junc_scl != 0) cout   << "==   INa_junc_scl   :  " << settings->INa_junc_scl << endl;
 		if(settings->INa_sl_scl != 0) cout     << "==   INa_sl_scl     :  " << settings->INa_sl_scl << endl;
 		if(settings->ICaL_junc_scl != 0) cout  << "==   ICaL_junc_scl  :  " << settings->ICaL_junc_scl << endl;

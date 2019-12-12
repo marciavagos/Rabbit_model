@@ -27,6 +27,7 @@ class Settings
 		double IaddStim, addStimEnd, addStimStart;
 		double* addStimParams;
 		bool* stimlocation; bool* stimlocationAddStim;
+		int PacingLocation;
 		bool useFixedDiastolePacing; // When used, bcl defines the fixed diastolic period
 
 		double* RyRParams_NP;
@@ -61,8 +62,8 @@ class Settings
 		
 		int numRyRs, RyRModelType;
 
-		int Ito_model;
-		
+		int Ito_model, NCX_model;
+
 		Settings()
 		{
 			N_Segments = 50; N_CaDomains = 18;
@@ -140,6 +141,8 @@ class Settings
 			stimlocationAddStim = new bool[1];
 				stimlocationAddStim[0] = true;
 
+			PacingLocation = 0;
+
 			applyVoltageClamp = false;
 			//VC_Values = NULL; VC_Times = NULL;
 			VC_index = 0;
@@ -183,7 +186,9 @@ class Settings
 			RyRModelType = 2;
 			
 			Flec = 0;
-			Ito_model = 1; //Lindblad [Aslanidi: Ito_model = 2]
+			Ito_model = 1; //Lindblad 
+			//Ito_model = 2; //Asladini
+			NCX_model = 1; //Lindblad [else: Aslanidi]
 		}
 		
 		~Settings()

@@ -528,33 +528,51 @@ void RAMM::Ion_HH_NaCa(int seg_i, int mem_i, double dt)
                 double Ca_junc_observed;
                 if(mem_i == 0) Ca_junc_observed = segments[seg_i].caUnits[0].Ca_srs;
                 if(mem_i == 1) Ca_junc_observed = segments[seg_i].caUnits[settings->N_CaDomains-1].Ca_srs;
-                
-                double Na_o_p3 = settings->Na_o * settings->Na_o * settings->Na_o;
-                double Na_sl_p3 =  segments[seg_i].membrane[mem_i].Na_sl * segments[seg_i].membrane[mem_i].Na_sl * segments[seg_i].membrane[mem_i].Na_sl;
-                double Na_junc_p3 =  segments[seg_i].membrane[mem_i].Na_junc * segments[seg_i].membrane[mem_i].Na_junc * segments[seg_i].membrane[mem_i].Na_junc;
-                
-                double Ka_junc = 1 / (1+pow(data->Kdact/Ca_junc_observed, 2));
-                double Ka_sl = 1 / (1+pow(data->Kdact/segments[seg_i].membrane[mem_i].Ca_sl, 2));
 
-                if(settings->Ca_o > 0)
-                {
-                        double Vm_s1 = exp(data->nu*Vm*data->frt) * settings->Ca_o;
-                        double s1_junc = Vm_s1 * Na_junc_p3;
-                        double s1_sl = Vm_s1 * Na_sl_p3;
-                        double Vm_s2 = exp((data->nu-1)*Vm*data->frt);
-                        double s2_junc = Vm_s2 * Na_o_p3 * Ca_junc_observed;
-                        double s3_junc = data->KmCai*Na_o_p3*(1+pow(segments[seg_i].membrane[mem_i].Na_junc/data->KmNai,3)) + data->KmNao_p3*Ca_junc_observed*(1+Ca_junc_observed/data->KmCai) + data->KmCao*Na_junc_p3 + Na_junc_p3*settings->Ca_o + Na_o_p3*Ca_junc_observed;
-                        double s2_sl = Vm_s2 * Na_o_p3 * segments[seg_i].membrane[mem_i].Ca_sl;
-                        double s3_sl = data->KmCai*Na_o_p3*(1+pow(segments[seg_i].membrane[mem_i].Na_sl/data->KmNai,3)) + data->KmNao_p3*segments[seg_i].membrane[mem_i].Ca_sl*(1+segments[seg_i].membrane[mem_i].Ca_sl/data->KmCai) + data->KmCao*Na_sl_p3 + Na_sl_p3*settings->Ca_o + Na_o_p3*segments[seg_i].membrane[mem_i].Ca_sl;
+		double Vm_s1 = exp(data->nu*Vm*data->frt) * settings->Ca_o;
+                double Vm_s2 = exp((data->nu-1)*Vm*data->frt);
 
-                        segments[seg_i].membrane[mem_i].INaCa_junc = settings->INaCa_junc_scl * (1 - settings->INaCaB) * data->Fjunc * data->IbarNCX * Ka_junc * (s1_junc-s2_junc)/s3_junc/(1+data->ksat*Vm_s2);
-                        segments[seg_i].membrane[mem_i].INaCa_sl = settings->INaCa_sl_scl * (1 - settings->INaCaB) * (1 - data->Fjunc) * data->IbarNCX * Ka_sl * (s1_sl-s2_sl)/s3_sl/(1+data->ksat*Vm_s2);
-                }
-                else
-                {
-                        segments[seg_i].membrane[mem_i].INaCa_junc = 0;
-                        segments[seg_i].membrane[mem_i].INaCa_sl = 0;
-                }
+		if (settings->NCX_model==1)
+		{
+			double s1_junc = pow(segments[seg_i].membrane[mem_i].Na_junc,data->n_NaCa)*settings->Ca_o;
+			double s1_sl = pow(segments[seg_i].membrane[mem_i].Na_sl,data->n_NaCa)*settings->Ca_o;
+			double s2_junc = pow(settings->Na_o,data->n_NaCa) * Ca_junc_observed;
+			double s2_sl = pow(settings->Na_o,data->n_NaCa) * segments[seg_i].membrane[mem_i].Ca_sl;
+			double s3_junc = 1+data->dNaCa*(pow(settings->Na_o,data->n_NaCa))*Ca_junc_observed + pow(segments[seg_i].membrane[mem_i].Na_junc,data->n_NaCa)*settings->Ca_o;
+			double s3_sl = 1+data->dNaCa*(pow(settings->Na_o,data->n_NaCa))*segments[seg_i].membrane[mem_i].Ca_sl + pow(segments[seg_i].membrane[mem_i].Na_sl,data->n_NaCa)* settings->Ca_o;
+
+			segments[seg_i].membrane[mem_i].INaCa_junc = settings->INaCa_junc_scl * (1 - settings->INaCaB) * data->Fjunc * data->IbarNCX * (s1_junc*Vm_s1-s2_junc*Vm_s2)/s3_junc;
+			segments[seg_i].membrane[mem_i].INaCa_sl = settings->INaCa_sl_scl * (1 - settings->INaCaB) * (1 - data->Fjunc) * data->IbarNCX * (s1_sl*Vm_s1-s2_sl*Vm_s2)/s3_sl;
+		}
+		else
+		{                
+               		double Na_o_p3 = settings->Na_o * settings->Na_o * settings->Na_o;
+                	double Na_sl_p3 =  segments[seg_i].membrane[mem_i].Na_sl * segments[seg_i].membrane[mem_i].Na_sl * segments[seg_i].membrane[mem_i].Na_sl;
+                	double Na_junc_p3 =  segments[seg_i].membrane[mem_i].Na_junc * segments[seg_i].membrane[mem_i].Na_junc * segments[seg_i].membrane[mem_i].Na_junc;
+                
+                	double Ka_junc = 1 / (1+pow(data->Kdact/Ca_junc_observed, 2));
+                	double Ka_sl = 1 / (1+pow(data->Kdact/segments[seg_i].membrane[mem_i].Ca_sl, 2));
+
+                	if(settings->Ca_o > 0)
+                	{
+                        	double Vm_s1 = exp(data->nu*Vm*data->frt) * settings->Ca_o;
+                        	double s1_junc = Vm_s1 * Na_junc_p3;
+                        	double s1_sl = Vm_s1 * Na_sl_p3;
+                        	double Vm_s2 = exp((data->nu-1)*Vm*data->frt);
+                        	double s2_junc = Vm_s2 * Na_o_p3 * Ca_junc_observed;
+                        	double s3_junc = data->KmCai*Na_o_p3*(1+pow(segments[seg_i].membrane[mem_i].Na_junc/data->KmNai,3)) + data->KmNao_p3*Ca_junc_observed*(1+Ca_junc_observed/data->KmCai) + data->KmCao*Na_junc_p3 + Na_junc_p3*settings->Ca_o + Na_o_p3*Ca_junc_observed;
+                        	double s2_sl = Vm_s2 * Na_o_p3 * segments[seg_i].membrane[mem_i].Ca_sl;
+                        	double s3_sl = data->KmCai*Na_o_p3*(1+pow(segments[seg_i].membrane[mem_i].Na_sl/data->KmNai,3)) + data->KmNao_p3*segments[seg_i].membrane[mem_i].Ca_sl*(1+segments[seg_i].membrane[mem_i].Ca_sl/data->KmCai) + data->KmCao*Na_sl_p3 + Na_sl_p3*settings->Ca_o + Na_o_p3*segments[seg_i].membrane[mem_i].Ca_sl;
+
+ 	                        segments[seg_i].membrane[mem_i].INaCa_junc = settings->INaCa_junc_scl * (1 - settings->INaCaB) * data->Fjunc * data->IbarNCX * Ka_junc * (s1_junc-s2_junc)/s3_junc/(1+data->ksat*Vm_s2);
+                        	segments[seg_i].membrane[mem_i].INaCa_sl = settings->INaCa_sl_scl * (1 - settings->INaCaB) * (1 - data->Fjunc) * data->IbarNCX * Ka_sl * (s1_sl-s2_sl)/s3_sl/(1+data->ksat*Vm_s2);
+                	}
+                	else
+                	{
+                        	segments[seg_i].membrane[mem_i].INaCa_junc = 0;
+                        	segments[seg_i].membrane[mem_i].INaCa_sl = 0;
+                	}
+		}
         }
         
 }
