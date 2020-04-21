@@ -188,7 +188,7 @@ class Settings
 			Flec = 0;
 			Ito_model = 1; //Lindblad 
 			//Ito_model = 2; //Asladini
-			NCX_model = 1; //Lindblad [else: Aslanidi]
+			NCX_model = 1; //Lindblad [else: Voigt & Heijman (2014)]
 		}
 		
 		~Settings()

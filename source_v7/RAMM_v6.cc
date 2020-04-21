@@ -28,8 +28,9 @@ void RAMM::init(Constants *idata, Settings *isettings)
 	double Buff_Ca_SLHsl = data->Bmax_SLhighsl * Ca_junc / (Ca_junc + Km_SLH);
 
 	Vm = -73.496; 
+	Na_i = 11.3; Na_junc = 11.3; Na_sl = 11.3;
 	//Na_i = 9.1366; Na_junc = 9.1361; Na_sl = 9.1364; 
-	Na_i = settings->Nai_initial; Na_junc = settings->Nai_initial; Na_sl = settings->Nai_initial;
+	//Na_i = settings->Nai_initial; Na_junc = settings->Nai_initial; Na_sl = settings->Nai_initial;
 	//Na_i = 6.86; Na_junc = 6.86; Na_sl = 6.86;
 	K_i = 120;
 	Ca_i = 2.0738e-04; Ca_sl = 2.2918e-4;

@@ -74,6 +74,7 @@ class Constants
 			a = 10.25; // [um]
 	
 			vcell = 16E-12; // [L]          
+                        //vcell = 12.4E-12; // [L]
 			vmyo = vcell*0.65;     
 			vsr = vcell*0.035;      
 			vsl = vcell*0.02;   

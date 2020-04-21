@@ -73,7 +73,7 @@ class Constants
 			l = 100; // [um]
 			a = 10.25; // [um]
 	
-			vcell = 16E-12; // [L]          
+			vcell = 1.26E-14; // [L]          
 			vmyo = vcell*0.65;     
 			vsr = vcell*0.035;      
 			vsl = vcell*0.02;   
