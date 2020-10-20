@@ -920,7 +920,7 @@ int singlecellsims(int argc, char *argv[])
 						double CaMKII_Avg = CaMKII_Int / settings->bcl;
 						if(outputAPD && !hideOutput) cout << "APD: " << cell->APD << ", dVdt: " << cell->valmaxdvdt << ", CaT: " << 1E3 * (cell->CaT_Max - cell->CaT_Min) << ", SR: " << cell->Ca_sr << ", Nai = " << cell->Na_i << ", Cai = " << 1E3 * cell->Ca_i << ", Vmin: " << cell->Vmin << ", APA: " << cell->APA << endl;
 							
-						fprintf(apdfile, "%-04e\t%-04e\t%-04e\t%-06e\t%-06e\t%-06e\t%-06e\t%-04e\t%-04e\t%d\n", t, cell->APD, cell->valmaxdvdt, 1E3 * (cell->CaT_Max - cell->CaT_Min), cell->Ca_sr, cell->Na_i, 1E3 * cell->Ca_i, cell->Vmin, cell->APA, beat);						
+						fprintf(apdfile, "%-4e\t%-4e\t%-4e\t%-6e\t%-6e\t%-6e\t%-6e\t%-4e\t%-4e\t%d\n", t, cell->APD, cell->valmaxdvdt, 1E3 * (cell->CaT_Max - cell->CaT_Min), cell->Ca_sr, cell->Na_i, 1E3 * cell->Ca_i, cell->Vmin, cell->APA, beat);
 					}
 					else
 					{
@@ -934,12 +934,12 @@ int singlecellsims(int argc, char *argv[])
 						double minRT = 1E8, maxRT = -1E8;
 						for(int x=0; x<settings->strandLength; x++)
 						{
-							fprintf(apdfile, "%-03e\t", cells[x].APD);
+							fprintf(apdfile, "%-3e\t", cells[x].APD);
 							double reptime = cells[x].tmaxdvdt + cells[x].APD;
 							if(reptime < minRT) minRT = reptime;
 							if(reptime > maxRT) maxRT = reptime;
 						}
-						fprintf(apdfile, "%-03e\t%-03e\t%-03e\n", CV, CT, maxRT - minRT);
+						fprintf(apdfile, "%-3e\t%-3e\t%-3e\n", CV, CT, maxRT - minRT);
 						if(outputAPD) cout << "APDs & dVdt: ENDO = " << cells[settings->ECGStart].APD << " & " << cells[settings->ECGStart].valmaxdvdt <<  ", MID = " << cells[midindex].APD << " & " << cells[midindex].valmaxdvdt << ", EPI = " << cells[settings->ECGEnd].APD << " & " << cells[settings->ECGEnd].valmaxdvdt << ", CV = " << CV << ", CT = " << CT << ", TDR = " << (maxRT - minRT) << endl;
 					}
 				}								
@@ -1009,15 +1009,15 @@ int singlecellsims(int argc, char *argv[])
 			if(runStrandSims && t - lastsavetime >= skip && t >= startsave)
 			{
 				double toutput = t-reducval;
-				fprintf(ecgfile,"%-05e\t",toutput);
+				fprintf(ecgfile,"%-5e\t",toutput);
 				if(!outputBinaryData)
 				{
-					fprintf(vmfile,"%-05e\t",toutput);
-					if(outputCai) fprintf(caifile,"%-05e\t",toutput);
-					if(outputIKs) fprintf(iksfile,"%-05e\t",toutput);
-					if(outputIKr) fprintf(ikrfile,"%-05e\t",toutput);
-					if(outputICaL) fprintf(icalfile,"%-05e\t",toutput);
-					if(outputICaT) fprintf(icatfile,"%-05e\t",toutput);
+					fprintf(vmfile,"%-5e\t",toutput);
+					if(outputCai) fprintf(caifile,"%-5e\t",toutput);
+					if(outputIKs) fprintf(iksfile,"%-5e\t",toutput);
+					if(outputIKr) fprintf(ikrfile,"%-5e\t",toutput);
+					if(outputICaL) fprintf(icalfile,"%-5e\t",toutput);
+					if(outputICaT) fprintf(icatfile,"%-5e\t",toutput);
 				}
 				else
 				{
@@ -1031,9 +1031,9 @@ int singlecellsims(int argc, char *argv[])
 				
 				if(outputEndoMidEpi)
 				{
-					fprintf(endofile, "%-05e\t",t-reducval);
-					fprintf(midfile, "%-05e\t",t-reducval);
-					fprintf(epifile, "%-05e\t",t-reducval);
+					fprintf(endofile, "%-5e\t",t-reducval);
+					fprintf(midfile, "%-5e\t",t-reducval);
+					fprintf(epifile, "%-5e\t",t-reducval);
 				}
 			}
 			
@@ -1057,12 +1057,12 @@ int singlecellsims(int argc, char *argv[])
 							int x = xj * tissueSizeX + xi;
 							if(!outputBinaryData)
 							{
-								fprintf(vmfile,"%-05e\t",cells[x].Vm);
-								if(outputCai) fprintf(caifile,"%-08e\t",cells[x].Ca_i);
-								if(outputIKs) fprintf(iksfile,"%-08e\t",cells[x].IKs);
-								if(outputIKr) fprintf(ikrfile,"%-08e\t",cells[x].IKr);
-								if(outputICaL) fprintf(icalfile,"%-08e\t",(cells[x].ICaL_junc));
-								if(outputICaT) fprintf(icatfile,"%-08e\t",(cells[x].ICaT_junc));
+								fprintf(vmfile,"%-5e\t",cells[x].Vm);
+								if(outputCai) fprintf(caifile,"%-8e\t",cells[x].Ca_i);
+								if(outputIKs) fprintf(iksfile,"%-8e\t",cells[x].IKs);
+								if(outputIKr) fprintf(ikrfile,"%-8e\t",cells[x].IKr);
+								if(outputICaL) fprintf(icalfile,"%-8e\t",(cells[x].ICaL_junc));
+								if(outputICaT) fprintf(icatfile,"%-8e\t",(cells[x].ICaT_junc));
 							}
 							else
 							{
@@ -1146,7 +1146,10 @@ int singlecellsims(int argc, char *argv[])
 					}
 					
 					if(isnan(cells[x].Vm))	perror("V is nan");
-					if(cells[x].Vm < -150)	perror("V is below -150 mV");
+                    if(cells[x].Vm < -150)	{
+                        cout << "INaCa_junc=" << cells[x].INaCa_junc << ", INaCa_sl=" << cells[x].INaCa_sl << endl;
+                        perror("V is below -150 mV");
+                    }
 					GenPurpose::wait(1.0);
 					
 					if(runStrandSims)
@@ -1178,7 +1181,7 @@ int singlecellsims(int argc, char *argv[])
 			{
 				if(runStrandSims)
 				{
-					fprintf(ecgfile, "%-08e\t%-08e\t%-08e\t%-08e\t%08e\n", ECG_Single_Far, ECG_Single_Near, ECG_Double_Far, ECG_Double_Near, ECG_Double_Alt);
+					fprintf(ecgfile, "%-8e\t%-8e\t%-8e\t%-8e\t%8e\n", ECG_Single_Far, ECG_Single_Near, ECG_Double_Far, ECG_Double_Near, ECG_Double_Alt);
 					if(!outputBinaryData)
 					{
 						fprintf(vmfile, "\n");
@@ -1287,7 +1290,7 @@ int singlecellsims(int argc, char *argv[])
 				//double CaMKII_Avg = CaMKII_Int / settings->bcl;
 				cout << "Almost done..." << endl;
 				cout << "APD: " << cell->APD << ", dVdt: " << cell->valmaxdvdt << ", CaT: " << 1E3 * (cell->CaT_Max - cell->CaT_Min) << ", SR: " << cell->Ca_sr << ", Nai = " << cell->Na_i << ", Cai = " << cell->Ca_i << ", Vmin = " << cell->Vmin << ", APA = " << cell->APA << endl;
-				fprintf(apdfile, "%-04e\t%-04e\t%-04e\t%-06e\t%-06e\t%-06e\t%-06e\t%-04e\t%-04e\t%d\n", t, cell->APD, cell->valmaxdvdt, 1E3 * (cell->CaT_Max - cell->CaT_Min), cell->Ca_sr, cell->Na_i, cell->Ca_i, cell->Vmin, cell->APA, beat);						
+				fprintf(apdfile, "%-4e\t%-4e\t%-4e\t%-6e\t%-6e\t%-6e\t%-6e\t%-4e\t%-4e\t%d\n", t, cell->APD, cell->valmaxdvdt, 1E3 * (cell->CaT_Max - cell->CaT_Min), cell->Ca_sr, cell->Na_i, cell->Ca_i, cell->Vmin, cell->APA, beat);
 			}
 			fclose(apdfile);
 			
