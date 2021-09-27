@@ -156,7 +156,7 @@ class Constants
 			GCaT = 120E-3;
 			gamma = 0.45;
 			dNaCa = 3e-4;
-			kNaCa = 1.41E-4;
+			kNaCa = 0.4E-3;
 			n_NaCa = 3;
 			ICaP_max = 190.0E-3; 
 			k_CaP = 2e-4;

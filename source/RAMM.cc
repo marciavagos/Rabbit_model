@@ -270,6 +270,7 @@ void RAMM::update(int cellnumber, double t, double dt, double vleft, double vrig
 	// ===================================================================	
 	for(int ii=0; ii<settings->N_Segments; ii++)
 	{
+        // Calculate ionic currents
 		for(int jj=0; jj<2; jj++)
 		{
 			Ion_HH_Na(ii, jj, dt); 
@@ -285,11 +286,11 @@ void RAMM::update(int cellnumber, double t, double dt, double vleft, double vrig
 			Ion_HH_NaCa(ii, jj, dt);	
 			Ion_HH_CaL(ii, jj, dt);
 			Ion_HH_CaT(ii, jj, dt);
-                        Ion_HH_CaP(ii, jj, dt);
+            		Ion_HH_CaP(ii, jj, dt);
+            		Ion_HH_Cab(ii, jj, dt);
 			Ion_HH_SK(ii, jj, dt);
 			Ion_HH_KAch(ii, jj, dt);
 			Ion_HH_ClCa(ii, jj, dt);
-			Ion_Ca_Handling(ii, jj, dt);     // time-independent calcium currents
 		}
 	
 		// == Calculate all local Ca domains
@@ -482,7 +483,7 @@ void RAMM::Ion_HH_Na(int seg_i, int mem_i, double dt)
         segments[seg_i].membrane[mem_i].INa_junc = settings->INa_junc_scl * (1 - settings->INaB) * INa_junc_NP;
         segments[seg_i].membrane[mem_i].INa_sl = settings->INa_sl_scl * (1 - settings->INaB) * INa_sl_NP;
 
-	if(seg_i == 0 && mem_i == 0) //only depends on Vm ?
+	if(seg_i == 0 && mem_i == 0) // Could also be defined as local members since they only depend on Vm
 	{
 		// Sodium m gate
 		am = -0.460 * (Vm + 44.4)/(exp(-(Vm + 44.4)/12.673) - 1);
@@ -582,9 +583,9 @@ void RAMM::Ion_HH_NaK(int seg_i, int mem_i, double dt)
 	
 	if(fabs(settings->INaKB - 1.0) < 1E-10)
         {
-                segments[seg_i].membrane[mem_i].INaK_junc = 0;
-		segments[seg_i].membrane[mem_i].INaK_sl = 0;
-                return;
+            segments[seg_i].membrane[mem_i].INaK_junc = 0;
+            segments[seg_i].membrane[mem_i].INaK_sl = 0;
+            return;
         }
 
 	if(seg_i == 0 && mem_i == 0)
@@ -621,17 +622,38 @@ void RAMM::Ion_HH_Nab(int seg_i, int mem_i, double dt)
 
 void RAMM::Ion_HH_Cab(int seg_i, int mem_i, double dt)
 {
-
-	if(fabs(settings->ICabB - 1.0) < 1E-10)
-        {
-                segments[seg_i].membrane[mem_i].ICab_junc = 0;
-		segments[seg_i].membrane[mem_i].ICab_sl = 0;
-                return;
-        }
-        double ECa_junc = log(settings->Ca_o/segments[seg_i].membrane[mem_i].Ca_junc)/data->frt;
-        double ECa_sl = log(settings->Ca_o/segments[seg_i].membrane[mem_i].Ca_sl)/data->frt;
+    
+    if(fabs(settings->ICabB - 1.0) < 1E-10)
+    {
+        segments[seg_i].membrane[mem_i].ICab_junc = 0;
+        segments[seg_i].membrane[mem_i].ICab_sl = 0;
+        return;
+    }
+    
+    double Ca_junc_observed;
+    if(mem_i == 0) Ca_junc_observed = segments[seg_i].caUnits[0].Ca_srs;
+    if(mem_i == 1) Ca_junc_observed = segments[seg_i].caUnits[settings->N_CaDomains-1].Ca_srs;
+    
+    double ECa_junc, ECa_sl;
+    ECa_junc = 300;
+    if(Ca_junc_observed > 1E-8)
+    {
+        ECa_junc = (1/data->frt/2) * log(settings->Ca_o/Ca_junc_observed);
+    }
+    ECa_sl = 300;
+    if(segments[seg_i].membrane[mem_i].Ca_sl > 1E-8)
+    {
+        ECa_sl = (1/data->frt/2) * log(settings->Ca_o/segments[seg_i].membrane[mem_i].Ca_sl);
+    }
+    if(settings->Ca_o > 0){
         segments[seg_i].membrane[mem_i].ICab_junc = settings->ICab_junc_scl * (1 - settings->ICabB) * data->Fjunc * data->GCab * (Vm-ECa_junc);
         segments[seg_i].membrane[mem_i].ICab_sl = settings->ICab_sl_scl * (1 - settings->ICabB) * (1-data->Fjunc) * data->GCab * (Vm-ECa_sl);
+    }
+    else
+    {
+        segments[seg_i].membrane[mem_i].ICab_junc = 0;
+        segments[seg_i].membrane[mem_i].ICab_sl = 0;
+    }
 }
 
 void RAMM::Ion_HH_Clb(int seg_i, int mem_i, double dt)
@@ -995,56 +1017,6 @@ void RAMM::Ion_HH_CaP(int seg_i, int mem_i, double dt)
 	segments[seg_i].membrane[mem_i].ICaP_sl = (1 - settings->ICaPB)*settings->ICaP_sl_scl * (1.0-data->Fjunc)*data->ICaP_max*segments[seg_i].membrane[mem_i].Ca_sl/(segments[seg_i].membrane[mem_i].Ca_sl+data->k_CaP);
 }
 
-// Original Grandi et al. Circ Res 2011 ICaL formulation - no longer used.
-void RAMM::Ion_Ca_Handling(int seg_i, int mem_i, double dt)
-{
-	
-	double Ca_junc_observed;
-	if(mem_i == 0) Ca_junc_observed = segments[seg_i].caUnits[0].Ca_srs;
-	if(mem_i == 1) Ca_junc_observed = segments[seg_i].caUnits[settings->N_CaDomains-1].Ca_srs;
-	
-	double temp_IpCa, ECa_junc, ECa_sl;
-	
-	// Junctional SRS Component
-	double ca_junc_pow = pow(Ca_junc_observed,1.6);
-	temp_IpCa = data->IbarSLCaP * ca_junc_pow / (data->KmPCaPow1_6+ca_junc_pow);
-	ECa_junc = 300;
-	if(Ca_junc_observed > 1E-8)
-	{
-		ECa_junc = (1/data->frt/2) * log(settings->Ca_o/Ca_junc_observed);
-	}
-	segments[seg_i].membrane[mem_i].IpCa_junc = (1 - settings->IpCaB) * data->Fjunc * temp_IpCa;
-	
-	// Subsarcolemmal component
-	double ca_sl_pow = pow(segments[seg_i].membrane[mem_i].Ca_sl,1.6);
-	temp_IpCa = data->IbarSLCaP * ca_sl_pow / (data->KmPCaPow1_6+ca_sl_pow);
-	ECa_sl = 300;
-	if(segments[seg_i].membrane[mem_i].Ca_sl > 1E-8)
-	{
-		ECa_sl = (1/data->frt/2) * log(settings->Ca_o/segments[seg_i].membrane[mem_i].Ca_sl);
-	}
-	segments[seg_i].membrane[mem_i].IpCa_sl = (1 - settings->IpCaB) * (1 - data->Fjunc) * temp_IpCa;
-	
-	if(settings->Ca_o > 0)
-	{
-	        //double ECa_junc = log(settings->Ca_o/segments[seg_i].membrane[mem_i].Ca_junc)/data->frt;
-        	//double ECa_sl = log(settings->Ca_o/segments[seg_i].membrane[mem_i].Ca_sl)/data->frt;
-        	segments[seg_i].membrane[mem_i].ICab_junc = settings->ICab_junc_scl * (1 - settings->ICabB) * data->Fjunc * data->GCab * (Vm-ECa_junc);
-        	segments[seg_i].membrane[mem_i].ICab_sl = settings->ICab_sl_scl * (1 - settings->ICabB) * (1-data->Fjunc) * data->GCab * (Vm-ECa_sl);
-	}
-	else
-	{
-		segments[seg_i].membrane[mem_i].ICab_junc = 0;
-		segments[seg_i].membrane[mem_i].ICab_sl = 0;
-	}
-	
-	if(showlog)
-	{
-		cout << "  seg_i = " << seg_i << ", mem_i = " << mem_i << ", Ca_sl = " << segments[seg_i].membrane[mem_i].Ca_sl << ", temp_IpCa = " << temp_IpCa << ", ECa_sl = " << ECa_sl << ", ICab_sl = " << segments[seg_i].membrane[mem_i].ICab_sl << endl;
-	}
-
-	
-}
 
 void RAMM::updateCaDomain(double dt, double t, int segment, int ca_domain, double Ca_i_L_Domain, double Ca_i_R_Domain, double Ca_i_U_Segment, double Ca_i_D_Segment, double Ca_sr_L_Domain, double Ca_sr_R_Domain, double Ca_sr_U_Segment, double Ca_sr_D_Segment, double Ca_srs_L_Domain, double Ca_srs_R_Domain, double Ca_srs_U_Segment, double Ca_srs_D_Segment)
 {
@@ -1095,7 +1067,7 @@ void RAMM::updateCaDomain(double dt, double t, int segment, int ca_domain, doubl
 			//Leftmost unit, no release, but diffusion from membrane 0
 			dCa_i = -segments[segment].caUnits[ca_domain].Jup * data->vsr/data->vmyo - J_CaB_cytosol + data->J_ca_slmyo*0.5/(data->vmyo/settings->N_CaDomains)*(segments[segment].membrane[0].Ca_sl - segments[segment].caUnits[ca_domain].Ca_i) + J_diff_i_subcell + J_diff_SRS_i;
 			
-			double I_Ca_tot_junc = segments[segment].membrane[0].ICaL_junc + segments[segment].membrane[0].ICaT_junc + segments[segment].membrane[0].ICab_junc - 2*segments[segment].membrane[0].INaCa_junc;		// [uA/uF]
+			double I_Ca_tot_junc = segments[segment].membrane[0].ICaL_junc + segments[segment].membrane[0].ICaT_junc + segments[segment].membrane[0].ICab_junc + segments[segment].membrane[0].ICaP_junc - 2*segments[segment].membrane[0].INaCa_junc;		// [uA/uF]
 			dCa_srs = -I_Ca_tot_junc * data->CmemF/(data->vjunc*2) + data->J_ca_juncsl*0.5/(data->vjunc/settings->N_CaDomains)*(segments[segment].membrane[0].Ca_sl - segments[segment].caUnits[ca_domain].Ca_srs) + segments[segment].caUnits[ca_domain].Jrel*data->vsr/data->vjunc + segments[segment].caUnits[ca_domain].Jleak*data->vmyo/data->vjunc + J_diff_srs_subcell - data->vmyo/data->vjunc * J_diff_SRS_i;
 		}
 		else
@@ -1105,7 +1077,7 @@ void RAMM::updateCaDomain(double dt, double t, int segment, int ca_domain, doubl
 				//Rightmost unit, no release, but diffusion from membrane 1
 				dCa_i = -segments[segment].caUnits[ca_domain].Jup * data->vsr/data->vmyo - J_CaB_cytosol + data->J_ca_slmyo*0.5/(data->vmyo/settings->N_CaDomains)*(segments[segment].membrane[1].Ca_sl - segments[segment].caUnits[ca_domain].Ca_i) + J_diff_i_subcell + J_diff_SRS_i;
 
-				double I_Ca_tot_junc = segments[segment].membrane[1].ICaL_junc + segments[segment].membrane[1].ICaT_junc + segments[segment].membrane[1].ICab_junc  - 2*segments[segment].membrane[1].INaCa_junc;		// [uA/uF]
+				double I_Ca_tot_junc = segments[segment].membrane[1].ICaL_junc + segments[segment].membrane[1].ICaT_junc + segments[segment].membrane[1].ICab_junc  + segments[segment].membrane[1].ICaP_junc - 2*segments[segment].membrane[1].INaCa_junc;		// [uA/uF]
 				dCa_srs = -I_Ca_tot_junc * data->CmemF/(data->vjunc*2) + data->J_ca_juncsl*0.5/(data->vjunc/settings->N_CaDomains)*(segments[segment].membrane[1].Ca_sl - segments[segment].caUnits[ca_domain].Ca_srs) + segments[segment].caUnits[ca_domain].Jrel*data->vsr/data->vjunc + segments[segment].caUnits[ca_domain].Jleak*data->vmyo/data->vjunc + J_diff_srs_subcell - data->vmyo/data->vjunc * J_diff_SRS_i;
 			}
 			else
@@ -1173,7 +1145,7 @@ void RAMM::UpdateConcentrations(int seg_i, int mem_i, double dt, double t, doubl
 	segments[seg_i].membrane[mem_i].Na_sl = check_State_Change(segments[seg_i].membrane[mem_i].Na_sl, dNa_sl, dt);
 	
 	double I_Ca_tot_junc = segments[seg_i].membrane[mem_i].ICaL_junc + segments[seg_i].membrane[mem_i].ICab_junc + segments[seg_i].membrane[mem_i].ICaT_junc - 2*segments[seg_i].membrane[mem_i].INaCa_junc;// [uA/uF]
-	double I_Ca_tot_sl = segments[seg_i].membrane[mem_i].ICaL_sl + segments[seg_i].membrane[mem_i].ICaT_sl + segments[seg_i].membrane[mem_i].ICab_sl + segments[seg_i].membrane[mem_i].IpCa_sl - 2*segments[seg_i].membrane[mem_i].INaCa_sl;            		// [uA/uF]
+	double I_Ca_tot_sl = segments[seg_i].membrane[mem_i].ICaL_sl + segments[seg_i].membrane[mem_i].ICaT_sl + segments[seg_i].membrane[mem_i].ICab_sl + segments[seg_i].membrane[mem_i].ICaP_sl - 2*segments[seg_i].membrane[mem_i].INaCa_sl;            		// [uA/uF]
 	double J_diff_Casl_subcell = (Ca_sl_U_Segment - segments[seg_i].membrane[mem_i].Ca_sl + Ca_sl_D_Segment - segments[seg_i].membrane[mem_i].Ca_sl) / data->tau_diff_Casl_Segment;
 
 	double dBuff_Ca_EGTA_sl = (0.005 / dt) * (data->kon_EGTA * segments[seg_i].membrane[mem_i].Ca_sl * (data->EGTA * (data->vmyo / data->vsl) - segments[seg_i].membrane[mem_i].Buff_Ca_EGTA_sl) - data->koff_EGTA * segments[seg_i].membrane[mem_i].Buff_Ca_EGTA_sl);
@@ -2191,3 +2163,4 @@ void RAMM::loadX0Data(double* x0data, int x0length)
 		segments[ii].K_i = x0data[ii*numVarsPerSegment+2*numVarsPerMembr+settings->N_CaDomains*23+startat+3];
 	}
 }
+
