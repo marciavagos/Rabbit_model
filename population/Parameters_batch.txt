@@ -5,7 +5,7 @@ bcl = 500
 
 startsave = 145000
 ft = 150000
-X0_File = states_v2_CTL.txt 
+X0_File=states.txt 
 Update_X0 = true
 Load_X0 = true
 Output_APD = true

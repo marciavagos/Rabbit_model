@@ -1,18 +1,4 @@
 #!/bin/bash -l
-#SBATCH --job-name=PoMCTL
-#SBATCH --account=nn9249k
-#SBATCH --time=02:00:00
-#SBATCH --ntasks=1
-#SBATCH --mem-per-cpu=10G
-#SBATCH --output=out.txt
-#SBATCH --error=err.txt
-
-source /cluster/bin/jobsetup
-
-module load openmpi.intel/1.7
-MPIRUN=mpirun
-
-module load zlib
 
 array=( 484 510 652 880 928 946 959 1044 1067 1086 1105 1162 1172 1195 1252 1306 1340 1391 1639 1799 1928 2029 2266 2409 2656 2674 2794 2797 2828 )
 
@@ -48,11 +34,6 @@ do
   sed -i 's/IClb_scl=IClb_scl/IClb_scl='"${p[12]}"'/' Parameters_$model.txt
   sed -i 's/X0_File=states.txt/X0_File=states_'"$model"'.txt/' Parameters_$model.txt
 
-  #sed -i 's/Parameters.txt/Parameters_'"$model"'.txt/' run.sh
-  #sed -i 's/out.txt/out_'"$model"'.txt/' run.sh
-  #sed -i 's/outputfile/output_'"$model"'.txt/' run.sh
-
-  #sbatch run.sh
   $ramm_file Parameters_$model.txt output_$model.txt CELL
 
 done
