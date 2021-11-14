@@ -1,9 +1,17 @@
 #!/bin/bash -l
 
-array=( 484 510 652 880 928 946 959 1044 1067 1086 1105 1162 1172 1195 1252 1306 1340 1391 1639 1799 1928 2029 2266 2409 2656 2674 2794 2797 2828 )
+params_file=params_CTL.txt
+#params_file=params_pop.txt
 
-params_file=/work/users/marcia/rabbit/source_v6/PoM_2Hz_3/params_CTL.txt
-ramm_file=/work/users/marcia/rabbit/source_v6/RAMM.out
+ramm_file=RAMM.out
+
+
+# Use the following array to re-run the whole population of 3000 models with <params_pop.txt> file
+array=( 1 171 268 452 518 759 946 959 1105 1172 1195 1391 1639 1650 1711 1822 2065 )
+
+# Use the following array to re-run only the  population of 16 models with <params_CTL.txt> file
+array=( 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 )
+
 
 for model in "${array[@]}"
 do
