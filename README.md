@@ -22,5 +22,8 @@ folder (<population.sh>), which makes use of the <Parameters_batch.txt> file to 
 with different maximum conductances scalings (relative to baseline parameters). 
 
 The file <population/params_CTL.txt> rovides 17 different maximum conductance scalings,
-the first line corresponding to the baseline values, and the other lines corresponding to the 16 models published in the [Vagos et al., 2020](https://www.frontiersin.org/articles/10.3389/fphys.2020.556156/full) paper.
+the first line corresponding to the baseline values, and the other lines corresponding to the 16 models 
+published in the [Vagos et al., 2020](https://www.frontiersin.org/articles/10.3389/fphys.2020.556156/full) paper.
+
+Additional simulated data of this  population of 16 models can be found [here](https://github.com/marciavagos/rabbit_model_datasets).
 
