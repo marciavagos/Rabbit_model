@@ -5,15 +5,19 @@ params_file=params_CTL.txt
 
 ramm_file=RAMM.out
 
+# 1 - Choose models to simulate
+# Run the population of 16 control models with <params_CTL.txt> file
+indices=( $(seq 1 17 ) )
 
-# Use the following array to re-run the whole population of 3000 models with <params_pop.txt> file
-array=( 1 171 268 452 518 759 946 959 1105 1172 1195 1391 1639 1650 1711 1822 2065 )
+# 2 - Run the population of 16 control models with <params_pop.txt> file
+#indices=( 1 171 268 452 518 759 946 959 1105 1172 1195 1391 1639 1650 1711 1822 2065 )
 
-# Use the following array to re-run only the  population of 16 models with <params_CTL.txt> file
-array=( 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 )
+# 3 - Run the entire population of 3000 models with the <params_pop.txt> file
+#indices=( $(seq 1 3000 ) )
 
 
-for model in "${array[@]}"
+
+for model in "${indices[@]}"
 do
   cp /work/users/marcia/rabbit/source_v6/PoM_2Hz_3/Parameters_4.txt ./Parameters_$model.txt
   cp /work/users/marcia/rabbit/source_v6/PoM_2Hz_3/run.sh ./
